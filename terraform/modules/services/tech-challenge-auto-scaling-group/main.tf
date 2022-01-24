@@ -23,7 +23,8 @@ resource "aws_autoscaling_group" "tech_challenge_web_app" {
   metrics_granularity = "1Minute"
 
   vpc_zone_identifier  = [
-    var.subnet_id
+    var.public_subnet_1_id,
+    var.public_subnet_2_id
   ]
 
   # Required to redeploy without an outage.

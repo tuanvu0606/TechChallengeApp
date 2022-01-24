@@ -38,6 +38,17 @@ module "tech_challenge_public_subnet" {
   depends_on = [module.tech_challenge_vpc]
 }
 
+module "tech_challenge_public_subnet_2" {
+  source = "./modules/services/tech-challenge-subnet"
+
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+  cidr_block = "10.0.7.0/24"
+  tags_name = "Tech Challenge Public Subnet 2"
+  availability_zone = "ap-southeast-1b"
+
+  depends_on = [module.tech_challenge_vpc]
+}
+
 module "tech_challenge_private_subnet_1" {
   source = "./modules/services/tech-challenge-subnet"
 
@@ -162,7 +173,8 @@ module "tech_challenge_auto_scaling_group" {
 
   load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
   launch_configuration_name = module.tech_challenge_launch_configuration.launch_configuration_name
-  subnet_id = module.tech_challenge_public_subnet.subnet_id
+  public_subnet_1_id = module.tech_challenge_public_subnet.subnet_id
+  public_subnet_2_id = module.tech_challenge_public_subnet_2.subnet_id
 
   depends_on = [
     module.tech_challenge_vpc,
