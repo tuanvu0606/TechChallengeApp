@@ -1,6 +1,13 @@
 # TechChallengeApp
 Repo built for TechChallengeApp
 
+## Prequisite
+```
+You need to have git installed on your PC, preferbably version 2.17.1
+If you use Powershell, this works best on version 5.1.19041.1320
+If you use Linux Bash, it works best on Ubuntu 18.04.5 LTS
+```
+
 ## Install Git
 
 ### For Linux Debian and Ubuntu
@@ -24,11 +31,6 @@ Install-Module posh-git -Scope CurrentUser -Force
 Import-Module posh-git
 Add-PoshGitToProfile -AllHosts
 ```
-
-## Prequisite
-You need to have git installed on your PC, preferbably version 2.17.1
-If you use Powershell, this works best on version 5.1.19041.1320
-If you use Linux Bash, it works best on Ubuntu 18.04.5 LTS
 
 ## Clone repo
 
