@@ -6,6 +6,10 @@ variable "launch_configuration_name" {
   type = string
 }
 
-variable "subnet_id" {
+variable "public_subnet_1_id" {
+  type = string
+}
+
+variable "public_subnet_2_id" {
   type = string
 }
