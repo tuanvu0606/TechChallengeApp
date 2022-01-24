@@ -93,6 +93,7 @@ remove_terraform_ec2_server(){
     # automatically removes the server by Terraform
 
     cd ./terraform
+    terraform init
     terraform destroy -auto-approve
     cd ..
 }
