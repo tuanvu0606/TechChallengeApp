@@ -1,6 +1,10 @@
 # TechChallengeApp
 Repo built for TechChallengeApp
 
+## Topology
+
+[<img src="https://i.ibb.co/5B7zCNG/image.png">](https://github.com/tuanvu0606/TechChallengeApp)
+
 ## Prequisite
 ```
 You need to have git installed on your PC, preferbably version 2.17.1
