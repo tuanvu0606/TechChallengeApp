@@ -1,6 +1,5 @@
 # TechChallengeApp
 Repo built for TechChallengeApp
-# web_server_with_health_check
 
 ## Install Git
 
@@ -36,7 +35,7 @@ If you use Linux Bash, it works best on Ubuntu 18.04.5 LTS
 Please clone repo by this command:
 
 ```
-git clone https://github.com/tuanvu0606/web_server_with_health_check.git
+git clone https://github.com/tuanvu0606/TechChallengeApp.git
 ```
 
 ## Set up Database Credentials

@@ -84,17 +84,6 @@ Function create_terraform_ec2_server{
     cd ./terraform
     terraform init
     terraform apply -auto-approve
-
-    if (-Not (Test-Path -Path $env:USERPROFILE/.ssh -PathType Container)) {
-        mkdir $env:USERPROFILE/.ssh
-    }
-
-    if (-Not (Test-Path -Path $env:USERPROFILE/.ssh/challenge-ec2-private-key.pem -PathType Leaf)) {
-        New-Item -Path $env:USERPROFILE/.ssh -Name "challenge-ec2-private-key.pem" -ItemType "file"
-    }
-       Clear-Content "$env:USERPROFILE/.ssh/challenge-ec2-private-key.pem"
-    terraform output tls_private_key_pem_content | Out-File $env:USERPROFILE/.ssh/challenge-ec2-private-key.pem
-    
     cd ..
 }
 
@@ -157,17 +146,6 @@ Function create_stack(){
     create_dynamo_db_for_terraform_state_lock
 
     create_terraform_ec2_server
-
-    create_apache_web_server
-
-    get_ec2_instance_ip_address
-
-    while ([Console]::ReadKey($true)) {
-        Write-Output "Press your break key to stop.."
-        do_health_check
-        Start-Sleep -Seconds 1  
-    } 
-
     
 }
 

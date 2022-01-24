@@ -13,22 +13,12 @@ resource "aws_launch_configuration" "tech_challenge_launch_configuration" {
   ]
   associate_public_ip_address = true
 
-  # user_data = <<EOF
-  #   #!/bin/bash
-  #   REPO='servian/TechChallengeApp'
-  #   cd ~
-  #   wget $(curl -s https://api.github.com/repos/servian/TechChallengeApp/releases/latest | awk -F\" '/browser_download_url.*linux64.zip/{print $(NF-1)}')
-  # EOF
   user_data = "${base64encode(data.template_file.user_data_hw.rendered)}"
-
 
   lifecycle {
     create_before_destroy = true
   }
 }
-
-  # user_data = "${base64encode(data.template_file.user_data_hw.rendered)}"
-
 
 data "template_file" "user_data_hw" {
   template = <<EOF
