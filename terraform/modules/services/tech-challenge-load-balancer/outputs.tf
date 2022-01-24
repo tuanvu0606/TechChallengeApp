@@ -1,8 +1,7 @@
-output "tls_private_key_pem_content" {
-  value = tls_private_key.challenge_tpk.private_key_pem
-  sensitive = true
+output "load_balancer_id" {
+  value = aws_elb.web_elb.id
 }
 
-output "instance_ip_addr" {
-  value = aws_instance.challeng_ec2.public_ip
+output "tech_elb_dns_name" {
+  value = aws_elb.web_elb.dns_name
 }
