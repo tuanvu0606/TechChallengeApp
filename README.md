@@ -3,7 +3,7 @@ Repo built for TechChallengeApp
 
 ## Topology
 
-[<img src="https://i.ibb.co/5B7zCNG/image.png">](https://github.com/tuanvu0606/TechChallengeApp)
+[<img src="https://i.ibb.co/KrWB5Mv/image.png">](https://github.com/tuanvu0606/TechChallengeApp)
 
 ## Prequisite
 ```
