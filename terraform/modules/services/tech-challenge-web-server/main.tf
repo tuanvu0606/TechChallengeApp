@@ -160,3 +160,15 @@ resource "aws_instance" "challeng_ec2" {
     Name = "challeng_ec2"
   }
 }
+
+# ---------------------------------------------------- Load Balancer ------------------------------------------------------------- #
+
+resource "aws_network_interface" "challenge_network_interface" {
+  subnet_id   = aws_subnet.challenge_southeast_public_subnet.id
+  private_ips = ["10.0.1.6"]
+  security_groups = [aws_security_group.challenge_public_asg.id]
+
+  tags = {
+    Name = "challenge_network_interface"
+  }
+}
