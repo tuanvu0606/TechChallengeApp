@@ -1,13 +1,7 @@
-# output "challenge_web_server_tls_private_key_pem_content" {
-#   value = module.challenge_web_server.tls_private_key_pem_content
-#   sensitive = true
-#   description = "tls private key content"
-# }
-
-# output "challenge_web_server_instance_ip_addr" {
-#   value       = module.challenge_web_server.instance_ip_addr
-#   description = "web server IP address"
-# }
+output "load_balancer_dns_name" {
+  value       = module.tech_challenge_load_balancer.tech_elb_dns_name
+  description = "Load Balancer DNS name"
+}
 
 output "tech_challenge_vpc_id" {
   value       = module.tech_challenge_vpc.tech_challenge_vpc_id
