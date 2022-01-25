@@ -1,11 +1,11 @@
 output "endpoint" {
-  value = aws_db_instance.tech_challenge_db_instance_1.endpoint
+  value = aws_db_instance.tech_challenge_db_instance.endpoint
 }
 
 output "address" {
-  value = aws_db_instance.tech_challenge_db_instance_1.address
+  value = aws_db_instance.tech_challenge_db_instance.address
 }
 
 output "port" {
-  value = aws_db_instance.tech_challenge_db_instance_1.port
+  value = aws_db_instance.tech_challenge_db_instance.port
 }
