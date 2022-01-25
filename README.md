@@ -12,6 +12,9 @@ If you use Powershell, this works best on version 5.1.19041.1320
 If you use Linux Bash, it works best on Ubuntu 18.04.5 LTS
 ```
 
+## Automated Build and Release
+[Automated Build and Release with Azure DevOps](https://dev.azure.com/tuanmoc0606/TechChallengeApp/_build)
+
 ## Install Git
 
 ### For Linux Debian and Ubuntu
@@ -152,6 +155,3 @@ Run the commands below to create or destroy the application stack, if you create
 ```
 .\main.ps1 -command destroy
 ```
-
-## Automated Build and Release
-[Automated Build and Release with Azure DevOps](https://dev.azure.com/tuanmoc0606/TechChallengeApp/_build)
