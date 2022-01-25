@@ -144,6 +144,20 @@ module "tech_challenge_security_group" {
     }
   ]
 
+  egress_rules = [
+    {
+      cidr_blocks      = ["0.0.0.0/0"]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = ["::/0"]
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    },
+  ]
+
 
   depends_on = [
     module.tech_challenge_vpc    
