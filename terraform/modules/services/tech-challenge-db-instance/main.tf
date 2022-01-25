@@ -11,6 +11,17 @@ ingress {
       "10.0.7.0/24"     
     ]
   }
+
+egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = [
+      "10.0.4.0/24",
+      "10.0.7.0/24"
+    ]
+  }
+
 }
 
 resource "aws_db_subnet_group" "tech_db_subnet_group" {
