@@ -119,6 +119,31 @@ module "tech_challenge_security_group" {
   source = "./modules/services/tech-challenge-security-group"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+  ingress_rules = [
+    {
+      cidr_blocks      = ["0.0.0.0/0",]
+      description      = ""
+      from_port        = 22
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 22
+    },
+    {
+      cidr_blocks      = ["0.0.0.0/0",]
+      description      = ""
+      from_port        = 3000
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 3000
+    }
+  ]
+
 
   depends_on = [
     module.tech_challenge_vpc    
