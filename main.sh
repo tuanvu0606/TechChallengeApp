@@ -13,6 +13,10 @@ declare_variable(){
     export INSTANCE_USER=""
 }
 
+declare_variables_for_destroy(){
+    export TF_VAR_challenge_postgres_db_password=""
+}
+
 install_aws_cli(){
 
     # Check if AWS Cli is installed, if yes then move forward, ignore this
@@ -127,6 +131,8 @@ create_stack(){
 
 destroy_stack(){
     declare_variable
+
+    declare_variables_for_destroy
 
     remove_terraform_ec2_server
 
