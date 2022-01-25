@@ -12,6 +12,7 @@ resource "aws_autoscaling_group" "tech_challenge_web_app" {
 
   launch_configuration = var.launch_configuration_name
 # test
+# test 2
   enabled_metrics = [
     "GroupMinSize",
     "GroupMaxSize",
