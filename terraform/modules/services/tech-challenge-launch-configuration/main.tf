@@ -38,7 +38,7 @@ cd ./dist
 cat <<EOT >> conf.toml
 "DbUser" = "postgres"
 "DbPassword" = "${var.database_password}"
-"DbName" = "tech_challenge_db_instance_name"
+"DbName" = "TechAppDB"
 "DbPort" = "${var.database_port}"
 "DbHost" = "${var.database_host}"
 "ListenHost" = "0.0.0.0"

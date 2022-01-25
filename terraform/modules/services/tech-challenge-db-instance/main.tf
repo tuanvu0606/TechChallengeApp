@@ -38,7 +38,7 @@ resource "aws_db_subnet_group" "tech_db_subnet_group" {
 
 resource "aws_db_instance" "tech_challenge_db_instance" {
   identifier             = "tech-challenge-db-instance"
-  name                   = "tech_challenge_db_instance_name"
+  name                   = "TechAppDB"
   instance_class         = "db.t2.micro"
   db_subnet_group_name   = aws_db_subnet_group.tech_db_subnet_group.id
   allocated_storage      = 5
