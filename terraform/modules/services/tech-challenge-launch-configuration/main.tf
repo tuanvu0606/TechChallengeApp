@@ -11,7 +11,7 @@ resource "aws_launch_configuration" "tech_challenge_launch_configuration" {
   security_groups = [ 
     var.security_group_id
   ]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   user_data = "${base64encode(data.template_file.user_data_hw.rendered)}"
 
@@ -38,7 +38,7 @@ cd ./dist
 cat <<EOT >> conf.toml
 "DbUser" = "postgres"
 "DbPassword" = "${var.database_password}"
-"DbName" = "tech_challenge_db_instance_name"
+"DbName" = "TechAppDB"
 "DbPort" = "${var.database_port}"
 "DbHost" = "${var.database_host}"
 "ListenHost" = "0.0.0.0"
