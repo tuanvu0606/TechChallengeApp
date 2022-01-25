@@ -36,7 +36,7 @@ resource "aws_db_subnet_group" "tech_db_subnet_group" {
   }
 }
 
-resource "aws_db_instance" "tech_challenge_db_instance_1" {
+resource "aws_db_instance" "tech_challenge_db_instance" {
   identifier             = "tech-challenge-db-instance"
   name                   = "TechAppDB"
   instance_class         = "db.t2.micro"
