@@ -2,15 +2,33 @@ resource "aws_security_group" "db_instance_sg" {
   vpc_id      = var.vpc_id
   name        = "db_instance_sg"
   description = "Allow all inbound for Postgres"
-ingress {
+ingress =[
+   {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = [
       "10.0.4.0/24",
-      "10.0.7.0/24"
+      "10.0.7.0/24"     
     ]
   }
+]
+
+#   egress = [
+#   {
+#     cidr_blocks      = [
+#       "10.0.4.0/24",
+#       "10.0.7.0/24"
+#     ]
+#     description      = ""
+#     from_port        = 0
+#     ipv6_cidr_blocks = ["::/0"]
+#     prefix_list_ids  = []
+#     protocol         = "-1"
+#     self             = false
+#     to_port          = 0
+#   },
+# ]
 }
 
 resource "aws_db_subnet_group" "tech_db_subnet_group" {
