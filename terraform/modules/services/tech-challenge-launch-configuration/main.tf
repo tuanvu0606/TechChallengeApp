@@ -45,7 +45,7 @@ cat <<EOT >> conf.toml
 "ListenPort" = "3000"
 EOT
 
-./TechChallengeApp updatedb &
+./TechChallengeApp updatedb -s
 
 nohup ./TechChallengeApp serve >/dev/null 2>&1 &
 
