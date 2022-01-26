@@ -27,7 +27,7 @@ module "tech_challenge_vpc" {
 
 # ------------------------------------------------------------------------------- Subnets ---------------------------------------------------------------- #
 
-module "tech_challenge_public_subnet" {
+module "tech_challenge_public_subnet_1" {
   source = "./modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
@@ -42,7 +42,7 @@ module "tech_challenge_public_subnet_2" {
   source = "./modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  cidr_block = "10.0.7.0/24"
+  cidr_block = "10.0.5.0/24"
   tags_name = "Tech Challenge Public Subnet 2"
   availability_zone = "ap-southeast-1b"
 
@@ -53,7 +53,7 @@ module "tech_challenge_private_subnet_1" {
   source = "./modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  cidr_block = "10.0.5.0/24"
+  cidr_block = "10.0.6.0/24"
   tags_name = "Tech Challenge Private Subnet"
   availability_zone = "ap-southeast-1a"
 
@@ -64,7 +64,7 @@ module "tech_challenge_private_subnet_2" {
   source = "./modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  cidr_block = "10.0.6.0/24"
+  cidr_block = "10.0.7.0/24"
   tags_name = "Tech Challenge Private Subnet"
   availability_zone = "ap-southeast-1b"
 
@@ -104,7 +104,7 @@ module "tech_challenge_route_table" {
 module "tech_challenge_route_table_association" {
   source = "./modules/services/tech-challenge-route-table-association"
 
-  subnet_id = module.tech_challenge_public_subnet.subnet_id
+  subnet_id = module.tech_challenge_public_subnet_1.subnet_id
 
   route_table_id = module.tech_challenge_route_table.route_table_id
 
@@ -120,17 +120,6 @@ module "tech_challenge_security_group" {
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
-    {
-      cidr_blocks      = ["0.0.0.0/0",]
-      description      = ""
-      from_port        = 22
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      protocol         = "tcp"
-      security_groups  = []
-      self             = false
-      to_port          = 22
-    },
     {
       cidr_blocks      = ["0.0.0.0/0",]
       description      = ""
@@ -199,7 +188,7 @@ module "tech_challenge_load_balancer" {
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   subnet_list = [
-    module.tech_challenge_public_subnet.subnet_id,
+    module.tech_challenge_public_subnet_1.subnet_id,
     module.tech_challenge_public_subnet_2.subnet_id
   ]
 
@@ -216,7 +205,7 @@ module "tech_challenge_auto_scaling_group" {
   load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
   launch_configuration_name = module.tech_challenge_launch_configuration.launch_configuration_name
   public_subnet_list = [
-    module.tech_challenge_public_subnet.subnet_id,
+    module.tech_challenge_public_subnet_1.subnet_id,
     module.tech_challenge_public_subnet_2.subnet_id
   ]
 
