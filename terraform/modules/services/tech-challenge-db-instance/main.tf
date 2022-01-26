@@ -1,29 +1,3 @@
-resource "aws_security_group" "db_instance_sg" {
-  vpc_id      = var.vpc_id
-  name        = "db_instance_sg"
-  description = "Allow all inbound for Postgres"
-ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = [
-      "10.0.4.0/24",
-      "10.0.7.0/24"     
-    ]
-  }
-
-egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = [
-      "10.0.4.0/24",
-      "10.0.7.0/24"
-    ]
-  }
-
-}
-
 resource "aws_db_subnet_group" "tech_db_subnet_group" {
   name       = "main"
   subnet_ids = var.private_subnet_list
@@ -43,7 +17,9 @@ resource "aws_db_instance" "tech_challenge_db_instance" {
   engine_version         = "9.6"
   skip_final_snapshot    = true
   publicly_accessible    = false
-  vpc_security_group_ids = [aws_security_group.db_instance_sg.id] 
+  vpc_security_group_ids = [
+    var.db_instance_sg_id
+  ] 
   username               = "postgres"
   password               = var.challenge_postgres_db_password
 } 
