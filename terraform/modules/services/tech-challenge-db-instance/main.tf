@@ -26,10 +26,7 @@ egress {
 
 resource "aws_db_subnet_group" "tech_db_subnet_group" {
   name       = "main"
-  subnet_ids = [
-    var.private_subnet_id_1,
-    var.private_subnet_id_2
-  ]
+  subnet_ids = var.private_subnet_list
 
   tags = {
     Name = "My DB subnet group"

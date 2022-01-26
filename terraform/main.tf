@@ -198,7 +198,10 @@ module "tech_challenge_load_balancer" {
   source = "./modules/services/tech-challenge-load-balancer"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  subnet_id = module.tech_challenge_public_subnet.subnet_id
+  subnet_list = [
+    module.tech_challenge_public_subnet.subnet_id,
+    module.tech_challenge_public_subnet_2.subnet_id
+  ]
 
   depends_on = [
     module.tech_challenge_vpc    
@@ -212,8 +215,10 @@ module "tech_challenge_auto_scaling_group" {
 
   load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
   launch_configuration_name = module.tech_challenge_launch_configuration.launch_configuration_name
-  public_subnet_1_id = module.tech_challenge_public_subnet.subnet_id
-  public_subnet_2_id = module.tech_challenge_public_subnet_2.subnet_id
+  public_subnet_list = [
+    module.tech_challenge_public_subnet.subnet_id,
+    module.tech_challenge_public_subnet_2.subnet_id
+  ]
 
   depends_on = [
     module.tech_challenge_vpc,
@@ -227,8 +232,11 @@ module "tech_challenge_db_instance" {
   source = "./modules/services/tech-challenge-db-instance"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   challenge_postgres_db_password = var.challenge_postgres_db_password
-  private_subnet_id_1 = module.tech_challenge_private_subnet_1.subnet_id
-  private_subnet_id_2 = module.tech_challenge_private_subnet_2.subnet_id
+
+  private_subnet_list = [
+    module.tech_challenge_private_subnet_1.subnet_id,
+    module.tech_challenge_private_subnet_2.subnet_id
+  ]
 
   depends_on = [
     module.tech_challenge_vpc    

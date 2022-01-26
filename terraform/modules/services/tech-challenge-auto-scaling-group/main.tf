@@ -1,5 +1,6 @@
 resource "aws_autoscaling_group" "tech_challenge_web_app" {
-  name = "tech-asg"
+  # name = "tech-asg"
+  name_prefix = "tech_challenge_launch_configuration"
 
   min_size             = 1
   desired_capacity     = 1
@@ -11,8 +12,7 @@ resource "aws_autoscaling_group" "tech_challenge_web_app" {
   ]
 
   launch_configuration = var.launch_configuration_name
-# test
-# test 2
+
   enabled_metrics = [
     "GroupMinSize",
     "GroupMaxSize",
@@ -23,11 +23,8 @@ resource "aws_autoscaling_group" "tech_challenge_web_app" {
 
   metrics_granularity = "1Minute"
 
-  vpc_zone_identifier  = [
-    var.public_subnet_1_id,
-    var.public_subnet_2_id
-  ]
-
+  vpc_zone_identifier  = var.public_subnet_list
+    
   # Required to redeploy without an outage.
   lifecycle {
     create_before_destroy = true
