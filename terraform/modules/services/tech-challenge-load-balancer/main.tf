@@ -27,9 +27,8 @@ resource "aws_elb" "web_elb" {
   security_groups = [
     aws_security_group.elb_http.id
   ]
-  subnets = [
-    var.subnet_id
-  ]
+  
+  subnets = var.subnet_list
 
   cross_zone_load_balancing   = true
 
