@@ -113,6 +113,19 @@ module "tech_challenge_route_table_association" {
   ]
 }
 
+module "tech_challenge_route_table_association" {
+  source = "./modules/services/tech-challenge-route-table-association"
+
+  subnet_id = module.tech_challenge_public_subnet_2.subnet_id
+
+  route_table_id = module.tech_challenge_route_table.route_table_id
+
+  depends_on = [
+    module.tech_challenge_route_table    
+  ]
+}
+
+
 # ------------------------------------------------------------------------------- Security Group ----------------------------------------------------- #
 
 module "tech_challenge_security_group" {
