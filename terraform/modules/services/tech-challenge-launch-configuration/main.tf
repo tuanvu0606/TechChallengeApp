@@ -11,7 +11,7 @@ resource "aws_launch_configuration" "tech_challenge_launch_configuration" {
   security_groups = [ 
     var.security_group_id
   ]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   user_data = "${base64encode(data.template_file.user_data_hw.rendered)}"
 

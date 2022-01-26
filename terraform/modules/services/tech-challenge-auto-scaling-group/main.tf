@@ -1,8 +1,8 @@
 resource "aws_autoscaling_group" "tech_challenge_web_app" {
   name = "tech-asg"
 
-  min_size             = 2
-  desired_capacity     = 2
+  min_size             = 1
+  desired_capacity     = 1
   max_size             = 4
   
   health_check_type    = "ELB"
