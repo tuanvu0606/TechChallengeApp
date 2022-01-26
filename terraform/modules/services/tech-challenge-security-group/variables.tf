@@ -2,6 +2,10 @@ variable "vpc_id" {
   type = string
 }
 
+variable "name" {
+  type = string
+}
+
 variable "ingress_rules" {
   type    = list(object({
     cidr_blocks      = list(string)

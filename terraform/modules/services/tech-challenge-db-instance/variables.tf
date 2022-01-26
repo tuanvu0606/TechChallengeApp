@@ -10,3 +10,7 @@ variable "private_subnet_list" {
   type    = list(string)
   default = []
 }
+
+variable "db_instance_sg_id" {
+  type = string
+}

@@ -98,6 +98,21 @@ module "tech_challenge_route_table" {
   ]
 }
 
+# ------------------------------------------------------------------------------- Main Route Table Association------------------------------------------ #
+
+module "tech_challenge_main_route_table_association_public" {
+  source = "./modules/services/tech-challenge-main-route-table-association"
+
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+
+  route_table_id = module.tech_challenge_route_table.route_table_id
+
+  depends_on = [
+    module.tech_challenge_vpc,
+    module.tech_challenge_route_table    
+  ]
+}
+
 
 # ------------------------------------------------------------------------------- Route Table Association---------------------------------------------- #
 
@@ -128,9 +143,9 @@ module "tech_challenge_route_table_association_public_2" {
 
 # ------------------------------------------------------------------------------- Security Group ----------------------------------------------------- #
 
-module "tech_challenge_security_group" {
+module "tech_challenge_security_group_frontend" {
   source = "./modules/services/tech-challenge-security-group"
-
+  name = "tech_challenge_security_group_frontend"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
     {
@@ -166,6 +181,50 @@ module "tech_challenge_security_group" {
   ]
 }
 
+module "tech_challenge_security_group_database" {
+  source = "./modules/services/tech-challenge-security-group"
+  name = "tech_challenge_security_group_database"
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+  ingress_rules = [
+    {
+      cidr_blocks      = [
+        "10.0.4.0/24",
+        "10.0.5.0/24" 
+      ]
+      description      = ""
+      from_port        = 5432
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 5432
+    }
+  ]
+
+  egress_rules = [
+    {
+      cidr_blocks      = [
+        "10.0.4.0/24",
+        "10.0.5.0/24" 
+      ]
+      description      = ""
+      from_port        = 5432
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 5432
+    },
+  ]
+
+
+  depends_on = [
+    module.tech_challenge_vpc    
+  ]
+}
+
 # ------------------------------------------------------------------------------- Key Pair ----------------------------------------------- #
 
 module "tech_challenge_key_pair" {
@@ -182,7 +241,7 @@ module "tech_challenge_launch_configuration" {
   source = "./modules/services/tech-challenge-launch-configuration"
 
   key_name = module.tech_challenge_key_pair.key_name
-  security_group_id = module.tech_challenge_security_group.security_group_id
+  security_group_id = module.tech_challenge_security_group_frontend.security_group_id
 
   database_host = module.tech_challenge_db_instance.address
   database_port = module.tech_challenge_db_instance.port
@@ -224,7 +283,8 @@ module "tech_challenge_auto_scaling_group" {
 
   depends_on = [
     module.tech_challenge_vpc,
-    module.tech_challenge_db_instance 
+    module.tech_challenge_db_instance,
+    module.tech_challenge_security_group_frontend
   ]
 }
 
@@ -234,6 +294,7 @@ module "tech_challenge_db_instance" {
   source = "./modules/services/tech-challenge-db-instance"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   challenge_postgres_db_password = var.challenge_postgres_db_password
+  db_instance_sg_id = module.tech_challenge_security_group_database.security_group_id
 
   private_subnet_list = [
     module.tech_challenge_private_subnet_1.subnet_id,
