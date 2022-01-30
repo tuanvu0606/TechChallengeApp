@@ -6,3 +6,8 @@ variable "subnet_list" {
   type    = list(string)
   default = []
 }
+
+variable "security_groups" {
+  type    = list(string)
+  default = []  
+}

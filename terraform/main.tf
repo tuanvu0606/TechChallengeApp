@@ -175,6 +175,46 @@ module "tech_challenge_security_group_frontend" {
     },
   ]
 
+  tag_name = "tech_challenge_security_group_frontend"
+
+  depends_on = [
+    module.tech_challenge_vpc    
+  ]
+}
+
+module "tech_challenge_security_group_elb" {
+  source = "./modules/services/tech-challenge-security-group"
+  name = "tech_challenge_security_group_elb"
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+  ingress_rules = [
+    {
+      cidr_blocks      = ["0.0.0.0/0",]
+      description      = ""
+      from_port        = 80
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 80
+    }
+  ]
+
+  egress_rules = [
+    {
+      cidr_blocks      = ["0.0.0.0/0"]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = ["::/0"]
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    },
+  ]
+
+  tag_name = "tech_challenge_security_group_elb"
 
   depends_on = [
     module.tech_challenge_vpc    
@@ -219,6 +259,7 @@ module "tech_challenge_security_group_database" {
     },
   ]
 
+  tag_name = "tech_challenge_security_group_database"
 
   depends_on = [
     module.tech_challenge_vpc    
@@ -262,6 +303,10 @@ module "tech_challenge_load_balancer" {
   subnet_list = [
     module.tech_challenge_public_subnet_1.subnet_id,
     module.tech_challenge_public_subnet_2.subnet_id
+  ]
+
+  security_groups = [
+    module.tech_challenge_security_group_elb.security_group_id
   ]
 
   depends_on = [
