@@ -1,6 +1,5 @@
-resource "aws_security_group" "tech_challenge_public_asg" {
+resource "aws_security_group" "security_group" {
   name        = var.name
-  description = "Tech Challenge Public ASG"
   vpc_id      = var.vpc_id
 
   ingress     = var.ingress_rules
@@ -8,6 +7,6 @@ resource "aws_security_group" "tech_challenge_public_asg" {
   egress      = var.egress_rules
 
   tags = {
-    Name = "Tech Challenge Public ASG"
+    Name = var.tag_name
   }
 }

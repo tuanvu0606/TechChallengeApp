@@ -6,6 +6,10 @@ variable "name" {
   type = string
 }
 
+variable "tag_name" {
+  type = string
+}
+
 variable "ingress_rules" {
   type    = list(object({
     cidr_blocks      = list(string)
