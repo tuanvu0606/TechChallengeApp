@@ -14,7 +14,7 @@ resource "aws_db_instance" "tech_challenge_db_instance" {
   db_subnet_group_name   = aws_db_subnet_group.tech_db_subnet_group.id
   allocated_storage      = 5
   engine                 = "postgres"
-  engine_version         = "9.6"
+  engine_version         = "10.7"
   skip_final_snapshot    = true
   publicly_accessible    = false
   vpc_security_group_ids = [
