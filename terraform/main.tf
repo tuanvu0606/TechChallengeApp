@@ -124,6 +124,7 @@ module "tech_challenge_route_table_association_public_1" {
   route_table_id = module.tech_challenge_route_table.route_table_id
 
   depends_on = [
+    module.tech_challenge_vpc,
     module.tech_challenge_route_table    
   ]
 }
@@ -136,6 +137,7 @@ module "tech_challenge_route_table_association_public_2" {
   route_table_id = module.tech_challenge_route_table.route_table_id
 
   depends_on = [
+    module.tech_challenge_vpc,
     module.tech_challenge_route_table    
   ]
 }
@@ -276,7 +278,7 @@ module "tech_challenge_key_pair" {
   ]
 }
 
-# ------------------------------------------------------------------------------- Launch Configuration ----------------------------------------------- #
+# ------------------------------------------------------------------- Launch Configuration ----------------------------------------------- #
 
 module "tech_challenge_launch_configuration" {
   source = "./modules/services/tech-challenge-launch-configuration"
@@ -316,7 +318,7 @@ module "tech_challenge_load_balancer" {
 
 # ---------------------------------------------------- Auto Scaling Group ---------------------------------------------------------------- #
 
-module "tech_challenge_auto_scaling_group" {
+module "tech_challenge_auto_scaling_group_frontend" {
   source = "./modules/services/tech-challenge-auto-scaling-group"
 
   load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
@@ -333,7 +335,91 @@ module "tech_challenge_auto_scaling_group" {
   ]
 }
 
-# ---------------------------------------------------- DB Instance ---------------------------------------------------------------- #
+# ---------------------------------------------------- Auto Scaling Policy--------------------------------------------------------------- #
+
+module "tech_challenge_auto_scaling_policy_frontend_up" {
+  source = "./modules/services/tech-challenge-auto-scaling-policy"
+
+  name                   = "tech_challenge_auto_scaling_policy_frontend_up"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
+  
+  depends_on = [
+    module.tech_challenge_vpc
+  ]
+}
+
+module "tech_challenge_auto_scaling_policy_frontend_down" {
+  source = "./modules/services/tech-challenge-auto-scaling-policy"
+
+  name                   = "tech_challenge_auto_scaling_policy_frontend_down"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
+  
+  depends_on = [
+    module.tech_challenge_vpc
+  ]
+}
+
+# ---------------------------------------------------- Cloudwatch Metric Alarm -------------------------------------------------------- #
+
+module "tech_challenge_cloud_metric_alarm_up" {
+  source = "./modules/services/tech-challenge-cloudwatch-metric-alarm"
+
+  alarm_name          = "tech_challenge_cpu_alarm_up"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "60"
+  dimensions          = {
+    AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
+  } 
+
+  alarm_description   = "Tech Challenge increase alarm auto scaling group instance base on CPU"
+  alarm_actions       = [
+    module.tech_challenge_auto_scaling_policy_frontend_up.arn
+  ]
+  
+  depends_on = [
+    module.tech_challenge_vpc,
+    module.tech_challenge_auto_scaling_policy_frontend_up
+  ]
+}
+
+module "tech_challenge_cloud_metric_alarm_down" {
+  source = "./modules/services/tech-challenge-cloudwatch-metric-alarm"
+
+  alarm_name          = "tech_challenge_web_cpu_alarm_down"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "10"
+  dimensions          = {
+    AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
+  } 
+
+  alarm_description   = "Tech Challenge decrease alarm auto scaling group instance base on CPU"
+  alarm_actions       = [
+    module.tech_challenge_auto_scaling_policy_frontend_down.arn
+  ]
+  
+  depends_on = [
+    module.tech_challenge_vpc,
+    module.tech_challenge_auto_scaling_policy_frontend_down
+  ]
+}
+
+# ---------------------------------------------------- DB Instance ---------------------------------------------------------------------- #
 
 module "tech_challenge_db_instance" {
   source = "./modules/services/tech-challenge-db-instance"
