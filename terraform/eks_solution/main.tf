@@ -30,7 +30,6 @@ module "tech_challenge_public_subnet_1" {
   cidr_block = "10.0.4.0/24"
   tags_name = "Tech Challenge Public Subnet"
   availability_zone = "ap-southeast-1a"
-  map_public_ip_on_launch = true
 
   depends_on = [module.tech_challenge_vpc]
 }
@@ -42,7 +41,6 @@ module "tech_challenge_public_subnet_2" {
   cidr_block = "10.0.5.0/24"
   tags_name = "Tech Challenge Public Subnet 2"
   availability_zone = "ap-southeast-1b"
-  map_public_ip_on_launch = true
 
   depends_on = [module.tech_challenge_vpc]
 }
@@ -54,7 +52,6 @@ module "tech_challenge_private_subnet_1" {
   cidr_block = "10.0.6.0/24"
   tags_name = "Tech Challenge Private Subnet"
   availability_zone = "ap-southeast-1a"
-  map_public_ip_on_launch = false
 
   depends_on = [module.tech_challenge_vpc]
 }
@@ -66,7 +63,6 @@ module "tech_challenge_private_subnet_2" {
   cidr_block = "10.0.7.0/24"
   tags_name = "Tech Challenge Private Subnet"
   availability_zone = "ap-southeast-1b"
-  map_public_ip_on_launch = false
 
   depends_on = [module.tech_challenge_vpc]
 }
@@ -151,13 +147,13 @@ module "tech_challenge_security_group_frontend" {
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
     {
-      cidr_blocks      = []
+      cidr_blocks      = ["0.0.0.0/0",]
       description      = ""
       from_port        = 3000
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
       protocol         = "tcp"
-      security_groups  = [module.tech_challenge_security_group_elb.id,]
+      security_groups  = []
       self             = false
       to_port          = 3000
     }
@@ -616,33 +612,6 @@ module "tech_challenge_eks_cluster" {
     module.tech_challenge_public_subnet_1.subnet_id,
     module.tech_challenge_public_subnet_2.subnet_id
   ]
-
-  depends_on = [
-    module.tech_challenge_vpc,
-    module.tech_challenge_iam_role_eks 
-  ]
-}
-
-# ---------------------------------------------------- EKS Cluster Nodes --------------------------------------------------------- #
-
-module "tech_challenge_eks_cluster_nodes" {
-
-  source = "./modules/services/tech-challenge-eks-node-group"
-
-  count = var.eks_solution ? 1 : 0
-
-  cluster_name    = module.tech_challenge_eks_cluster[0].name
-  node_group_name = "node_group_1"
-  node_role_arn   = module.tech_challenge_iam_role_eks_nodes[0].arn
-  subnet_ids      = [
-    module.tech_challenge_public_subnet_1.subnet_id,
-    module.tech_challenge_public_subnet_2.subnet_id
-  ]
-
-  desired_size = 1
-  max_size     = 1
-  min_size     = 1
-
 
   depends_on = [
     module.tech_challenge_vpc,

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: dp-front-end
+  namespace: tech-challenge
+spec:
+  selector:
+    matchLabels:
+      deployment: dp-front-end
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        deployment: dp-front-end
+        access-exterior: web
+    spec:
+      containers:
+        - name: dp-front-end
+          image: servian/techchallengeapp:latest
+          args: ["updatedb", "-s"]
+          command: [ "bin/bash", "-c", "./TechChallengeApp", "serve" ]
+          ports:
+          - containerPort: 3000
+            name: http
+          volumeMounts:
+          - name: config-volume
+            mountPath: /TechChallengeApp/conf.toml
+            subPath: conf.toml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: front-end-config

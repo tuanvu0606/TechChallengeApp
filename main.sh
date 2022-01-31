@@ -6,9 +6,12 @@ declare_variable(){
 
     export TF_VAR_challenge_terraform_state_s3_bucket_name=tech-challenge-terraform-state-s3-bucket
     export TF_VAR_challenge_terraform_state_s3_bucket_region=ap-southeast-1
+    export TF_VAR_challenge_terraform_solution_region=ap-southeast-1
     export TF_VAR_challenge_terraform_state_dynamo_db_table_name=tech-challenge-terraform-state-dynamodb
     export TF_VAR_challenge_terraform_state_dynamo_db_table_billing_mode=PAY_PER_REQUEST
-    # export TF_VAR_challenge_postgres_db_password=""    
+    export TF_VAR_challenge_postgres_db_password="changeme"
+    export TF_VAR_eks_solution="true"
+    # export TF_VAR_auto_scaling_group_solution="false"
     export INSTANCE_IP_ADDRESS=""
     export INSTANCE_USER=""
 }
@@ -111,6 +114,15 @@ get_ec2_instance_ip_address (){
     cd ./terraform
     INSTANCE_IP_ADDRESS=$(terraform output challenge_web_server_instance_ip_addr | sed 's/"//g' )
     USER=ubuntu
+    cd ..
+}
+
+get_eks_config () {
+    cd ./terraform
+    aws eks \
+        --region ${TF_VAR_challenge_terraform_solution_region} \
+        update-kubeconfig \
+        --name $(terraform output eks_solution_cluster_name | sed 's/"//g')
     cd ..
 }
 

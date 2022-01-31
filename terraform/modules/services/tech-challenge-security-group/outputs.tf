@@ -1,4 +1,4 @@
-output "security_group_id" {
+output "id" {
   value = aws_security_group.security_group.id
   sensitive = true
 }

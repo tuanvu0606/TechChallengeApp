@@ -1,0 +1,8 @@
+--- 
+
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: tech-challenge
+  labels:
+    env: prod
