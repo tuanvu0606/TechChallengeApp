@@ -288,14 +288,11 @@ module "tech_challenge_auto_scaling_group" {
   ]
 }
 
-# ---------------------------------------------------- DB Instance ---------------------------------------------------------------- #
+# ---------------------------------------------------- DB Subnet Group ------------------------------------------------------------ #
 
-module "tech_challenge_db_instance" {
-  source = "./modules/services/tech-challenge-db-instance"
-  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  challenge_postgres_db_password = var.challenge_postgres_db_password
-  db_instance_sg_id = module.tech_challenge_security_group_database.security_group_id
-
+module "tech_challenge_db_subnet_group" {
+  source = "./modules/services/tech-challenge-db-subnet-group"
+  name       = "main"
   private_subnet_list = [
     module.tech_challenge_private_subnet_1.subnet_id,
     module.tech_challenge_private_subnet_2.subnet_id
@@ -303,5 +300,75 @@ module "tech_challenge_db_instance" {
 
   depends_on = [
     module.tech_challenge_vpc    
+  ]
+}
+
+module "tech_challenge_db_subnet_group_read" {
+  source = "./modules/services/tech-challenge-db-subnet-group"
+  name       = "read"
+  private_subnet_list = [
+    module.tech_challenge_private_subnet_1.subnet_id,
+    module.tech_challenge_private_subnet_2.subnet_id
+  ]
+
+  depends_on = [
+    module.tech_challenge_vpc    
+  ]
+}
+
+# ---------------------------------------------------- DB Instance ---------------------------------------------------------------- #
+
+module "tech_challenge_db_instance" {
+  source = "./modules/services/tech-challenge-db-instance"
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+
+  identifier             = "tech-challenge-db-instance"
+  replicate_source_db    = ""
+  db_subnet_group_name   = module.tech_challenge_db_subnet_group.id
+  name                   = "TechAppDB"
+  instance_class         = "db.t2.micro"
+  allocated_storage      = 5
+  engine                 = "postgres"
+  engine_version         = "9.6"
+  skip_final_snapshot    = true
+  publicly_accessible    = false
+  
+  username               = "postgres"
+  backup_retention_period = 1
+
+  challenge_postgres_db_password = var.challenge_postgres_db_password
+  db_instance_sg_id = module.tech_challenge_security_group_database.security_group_id
+
+  depends_on = [
+    module.tech_challenge_vpc,    
+    module.tech_challenge_db_subnet_group
+  ]
+}
+
+module "tech_challenge_db_instance_read" {
+  source = "./modules/services/tech-challenge-db-instance"
+  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+
+  identifier             = "tech-challenge-db-instance-read"
+  replicate_source_db    = module.tech_challenge_db_instance.id
+  db_subnet_group_name   = null
+  name                   = "TechAppDB"
+  instance_class         = "db.t2.micro"
+  allocated_storage      = 5
+  engine                 = "postgres"
+  engine_version         = "9.6"
+  skip_final_snapshot    = true
+  publicly_accessible    = false
+  
+  username               = ""
+  backup_retention_period = 0
+
+  challenge_postgres_db_password = ""
+  db_instance_sg_id = module.tech_challenge_security_group_database.security_group_id
+
+  depends_on = [
+    module.tech_challenge_vpc,
+    module.tech_challenge_db_subnet_group_read,
+    module.tech_challenge_db_instance    
   ]
 }

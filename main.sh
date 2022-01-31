@@ -8,7 +8,7 @@ declare_variable(){
     export TF_VAR_challenge_terraform_state_s3_bucket_region=ap-southeast-1
     export TF_VAR_challenge_terraform_state_dynamo_db_table_name=tech-challenge-terraform-state-dynamodb
     export TF_VAR_challenge_terraform_state_dynamo_db_table_billing_mode=PAY_PER_REQUEST
-    # export TF_VAR_challenge_postgres_db_password=""    
+    export TF_VAR_challenge_postgres_db_password="changeme"    
     export INSTANCE_IP_ADDRESS=""
     export INSTANCE_USER=""
 }
