@@ -53,6 +53,11 @@ git clone https://github.com/tuanvu0606/TechChallengeApp.git
 export TF_VAR_eks_solution="true"
 ```
 
+## AWS auto scaling solution
+```
+export TF_VAR_eks_solution="false"
+```
+
 ## Set up Database Credentials
 
 ### Linux either Redhat or Debian distributions (Bash)

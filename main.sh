@@ -155,6 +155,9 @@ remove_terraform_ec2_server(){
 remove_terraform_eks_solution(){
 
     # automatically removes the server by Terraform
+    cd ./terraform/eks_solution/helm
+    helm uninstall techchallenge
+    cd ../../..
 
     cd ./terraform/eks_solution/terraform
     terraform init
