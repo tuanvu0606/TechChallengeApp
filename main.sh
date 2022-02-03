@@ -10,7 +10,7 @@ declare_variable(){
     export TF_VAR_challenge_terraform_state_dynamo_db_table_name=tech-challenge-terraform-state-dynamodb
     export TF_VAR_challenge_terraform_state_dynamo_db_table_billing_mode=PAY_PER_REQUEST
     export TF_VAR_challenge_postgres_db_password="changeme"
-    export TF_VAR_eks_solution=""
+    export TF_VAR_eks_solution="true"
     export TF_VAR_eks_solution_region="ap-southeast-1"
     # export TF_VAR_auto_scaling_group_solution="false"
     export INSTANCE_IP_ADDRESS=""
@@ -223,7 +223,7 @@ destroy_stack(){
 
     declare_variables_for_destroy
 
-    if [ ${TF_VAR_eks_solution} = "true" ]; then
+    if [ "${TF_VAR_eks_solution}" = "true" ]; then
         echo "Destroying EKS solution"
         remove_terraform_eks_solution
     else 
