@@ -1,3 +1,4 @@
+{{ if .Values.Deployment.FrontEndDp.create }}
 apiVersion: apps/v1
 kind: Deployment 
 metadata:
@@ -7,26 +8,36 @@ spec:
   selector:
     matchLabels:
       deployment: dp-front-end
-  replicas: 1
+  replicas: {{ .Values.Deployment.FrontEndDp.spec.replica }}
   template:
     metadata:
       labels:
         deployment: dp-front-end
-        access-exterior: web
     spec:
       containers:
         - name: dp-front-end
           image: servian/techchallengeapp:latest
-          args: ["updatedb", "-s"]
-          command: [ "bin/bash", "-c", "./TechChallengeApp", "serve" ]
+          # args: ["serve"]
+          # args: ["updatedb", "-s"]
+          command: ["/bin/sh"]
+          args: ["-c", "sh ./deployment.sh"]
+
           ports:
           - containerPort: 3000
-            name: http
+            # name: http
           volumeMounts:
           - name: config-volume
             mountPath: /TechChallengeApp/conf.toml
             subPath: conf.toml
+          - name: deployment-script-volume
+            mountPath: /TechChallengeApp/deployment.sh
+            subPath: deployment.sh
       volumes:
         - name: config-volume
           configMap:
             name: front-end-config
+        - name: deployment-script-volume
+          configMap:
+            name: frontend-deployment-script
+            defaultMode: 0777
+{{ end }}

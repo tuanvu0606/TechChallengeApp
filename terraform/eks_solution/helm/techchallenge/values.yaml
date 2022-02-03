@@ -1,0 +1,10 @@
+ClusterAutoscalerServiceAccount: true
+TestConnection: false
+
+# ---------------------------------------------- Deployment ------------------------------------------- #
+
+Deployment:
+  FrontEndDp:
+    create: true
+    spec:
+      replica: 1

@@ -12,9 +12,23 @@ variable "node_role_arn" {
   default = ""
 }
 
+variable "tags" {
+  type    = object({  
+    Name = string
+  })
+  default = {
+    Name = "Cool1"
+  }
+}
+
 variable "subnet_ids" {
   type    = list(string)
   # default = ""
+}
+
+variable "instance_types" {
+  type    = list(string)
+  default = null
 }
 
 variable "desired_size" {

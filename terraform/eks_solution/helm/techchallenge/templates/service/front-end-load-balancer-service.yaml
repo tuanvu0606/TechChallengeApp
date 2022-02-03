@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: front-end-service
   namespace: tech-challenge
+  labels:
+    # app: dp-front-end
+    deployment: dp-front-end
   # annotations:
   #   service.beta.kubernetes.io/aws-load-balancer-type: external
   #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
@@ -14,4 +17,5 @@ spec:
       protocol: TCP
   type: LoadBalancer
   selector:
-    app: dp-front-end
+    # app: dp-front-end
+    deployment: dp-front-end

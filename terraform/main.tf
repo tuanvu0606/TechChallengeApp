@@ -643,6 +643,10 @@ module "tech_challenge_eks_cluster_nodes" {
   max_size     = 1
   min_size     = 1
 
+  # tags = {
+  #   "k8s.io/cluster-autoscaler/module.tech_challenge_eks_cluster[0].name" = "owned",
+  #   "k8s.io/cluster-autoscaler/enabled" = true
+  # }
 
   depends_on = [
     module.tech_challenge_vpc,
