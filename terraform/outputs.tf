@@ -1,3 +1,8 @@
+output "eks_solution_cluster_name" {
+  value       = module.tech_challenge_eks_cluster[0].name
+  description = "EKS Solution Cluster name"
+}
+
 output "load_balancer_dns_name" {
   value       = module.tech_challenge_load_balancer.tech_elb_dns_name
   description = "Load Balancer DNS name"

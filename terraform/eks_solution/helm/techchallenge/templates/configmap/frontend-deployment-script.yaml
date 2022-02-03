@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-deployment-script
+  namespace: tech-challenge
+data:
+  deployment.sh: |
+    #!/bin/bash
+    echo "Hello World"
+    apt-get install postgresql-client-common -y ; echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' >> /etc/apt/sources.list.d/pgdg.list ; apt-get update -y ; apt-get install postgresql-10 -y
+    ./TechChallengeApp updatedb -s
+    ./TechChallengeApp serve

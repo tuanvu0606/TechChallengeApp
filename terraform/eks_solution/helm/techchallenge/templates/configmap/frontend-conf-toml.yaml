@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: front-end-config
+  namespace: tech-challenge
+data:
+  conf.toml: |
+    "DbUser" = "postgres"
+    "DbPassword" = "changeme"
+    "DbName" = "TechAppDB"
+    "DbPort" = "5432"
+    "DbHost" = "tech-challenge-db-instance.cpqsjvfzm0kp.ap-southeast-1.rds.amazonaws.com"
+    "ListenHost" = "0.0.0.0"
+    "ListenPort" = "3000"

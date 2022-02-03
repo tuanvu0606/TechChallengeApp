@@ -11,20 +11,20 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-1"
+  region = var.eks_solution_region
 }
 
 # ------------------------------------------------------------------------------- VPC ------------------------------------------------------------------- #
 
 module "tech_challenge_vpc" {
-  source = "./modules/services/tech-challenge-vpc"
+  source = "../../modules/services/tech-challenge-vpc"
   enable_dns_hostnames = true
 }
 
 # ------------------------------------------------------------------------------- Subnets ---------------------------------------------------------------- #
 
 module "tech_challenge_public_subnet_1" {
-  source = "./modules/services/tech-challenge-subnet"
+  source = "../../modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   cidr_block = "10.0.4.0/24"
@@ -36,7 +36,7 @@ module "tech_challenge_public_subnet_1" {
 }
 
 module "tech_challenge_public_subnet_2" {
-  source = "./modules/services/tech-challenge-subnet"
+  source = "../../modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   cidr_block = "10.0.5.0/24"
@@ -48,19 +48,19 @@ module "tech_challenge_public_subnet_2" {
 }
 
 module "tech_challenge_private_subnet_1" {
-  source = "./modules/services/tech-challenge-subnet"
+  source = "../../modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   cidr_block = "10.0.6.0/24"
   tags_name = "Tech Challenge Private Subnet"
   availability_zone = "ap-southeast-1a"
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch =false
 
   depends_on = [module.tech_challenge_vpc]
 }
 
 module "tech_challenge_private_subnet_2" {
-  source = "./modules/services/tech-challenge-subnet"
+  source = "../../modules/services/tech-challenge-subnet"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   cidr_block = "10.0.7.0/24"
@@ -76,7 +76,7 @@ module "tech_challenge_private_subnet_2" {
 # ------------------------------------------------------------------------------- Internet Gateway-------------------------------------------------------- #
 
 module "tech_challenge_internet_gateway" {
-  source = "./modules/services/tech-challenge-internet-gateway"
+  source = "../../modules/services/tech-challenge-internet-gateway"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
 
@@ -86,7 +86,7 @@ module "tech_challenge_internet_gateway" {
 # ------------------------------------------------------------------------------- Route Table -------------------------------------------------------- #
 
 module "tech_challenge_route_table" {
-  source = "./modules/services/tech-challenge-route-table"
+  source = "../../modules/services/tech-challenge-route-table"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
 
@@ -101,7 +101,7 @@ module "tech_challenge_route_table" {
 # ------------------------------------------------------------------------------- Main Route Table Association------------------------------------------ #
 
 module "tech_challenge_main_route_table_association_public" {
-  source = "./modules/services/tech-challenge-main-route-table-association"
+  source = "../../modules/services/tech-challenge-main-route-table-association"
 
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
 
@@ -117,7 +117,7 @@ module "tech_challenge_main_route_table_association_public" {
 # ------------------------------------------------------------------------------- Route Table Association---------------------------------------------- #
 
 module "tech_challenge_route_table_association_public_1" {
-  source = "./modules/services/tech-challenge-route-table-association"
+  source = "../../modules/services/tech-challenge-route-table-association"
 
   subnet_id = module.tech_challenge_public_subnet_1.subnet_id
 
@@ -130,7 +130,7 @@ module "tech_challenge_route_table_association_public_1" {
 }
 
 module "tech_challenge_route_table_association_public_2" {
-  source = "./modules/services/tech-challenge-route-table-association"
+  source = "../../modules/services/tech-challenge-route-table-association"
 
   subnet_id = module.tech_challenge_public_subnet_2.subnet_id
 
@@ -146,18 +146,18 @@ module "tech_challenge_route_table_association_public_2" {
 # ------------------------------------------------------------------------------- Security Group ----------------------------------------------------- #
 
 module "tech_challenge_security_group_frontend" {
-  source = "./modules/services/tech-challenge-security-group"
+  source = "../../modules/services/tech-challenge-security-group"
   name = "tech_challenge_security_group_frontend"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
     {
-      cidr_blocks      = []
+      cidr_blocks      = ["0.0.0.0/0",]
       description      = ""
       from_port        = 3000
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
       protocol         = "tcp"
-      security_groups  = [module.tech_challenge_security_group_elb.id,]
+      security_groups  = []
       self             = false
       to_port          = 3000
     }
@@ -185,7 +185,7 @@ module "tech_challenge_security_group_frontend" {
 }
 
 module "tech_challenge_security_group_elb" {
-  source = "./modules/services/tech-challenge-security-group"
+  source = "../../modules/services/tech-challenge-security-group"
   name = "tech_challenge_security_group_elb"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
@@ -224,7 +224,7 @@ module "tech_challenge_security_group_elb" {
 }
 
 module "tech_challenge_security_group_database" {
-  source = "./modules/services/tech-challenge-security-group"
+  source = "../../modules/services/tech-challenge-security-group"
   name = "tech_challenge_security_group_database"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   ingress_rules = [
@@ -269,9 +269,9 @@ module "tech_challenge_security_group_database" {
 }
 
 module "tech_challenge_security_group_eks_cluster" {
-  source = "./modules/services/tech-challenge-security-group"
+  source = "../../modules/services/tech-challenge-security-group"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   name = "tech_challenge_security_group_eks_cluster"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
@@ -316,159 +316,159 @@ module "tech_challenge_security_group_eks_cluster" {
 
 # ------------------------------------------------------------------------------- Key Pair ----------------------------------------------- #
 
-module "tech_challenge_key_pair" {
-  source = "./modules/services/tech-challenge-key-pair"
+# module "tech_challenge_key_pair" {
+#   source = "../../modules/services/tech-challenge-key-pair"
 
-  depends_on = [
-    module.tech_challenge_vpc    
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc    
+#   ]
+# }
 
 # ------------------------------------------------------------------- Launch Configuration ----------------------------------------------- #
 
-module "tech_challenge_launch_configuration" {
-  source = "./modules/services/tech-challenge-launch-configuration"
+# module "tech_challenge_launch_configuration" {
+#   source = "../../modules/services/tech-challenge-launch-configuration"
 
-  key_name = module.tech_challenge_key_pair.key_name
-  security_group_id = module.tech_challenge_security_group_frontend.id
+#   key_name = module.tech_challenge_key_pair.key_name
+#   security_group_id = module.tech_challenge_security_group_frontend.id
 
-  database_host = module.tech_challenge_db_instance.address
-  database_port = module.tech_challenge_db_instance.port
-  database_password = var.challenge_postgres_db_password
+#   database_host = module.tech_challenge_db_instance.address
+#   database_port = module.tech_challenge_db_instance.port
+#   database_password = var.challenge_postgres_db_password
   
 
-  depends_on = [
-    module.tech_challenge_vpc    
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc    
+#   ]
+# }
 
 # ---------------------------------------------------- Load Balancer ------------------------------------------------------------- #
 
-module "tech_challenge_load_balancer" {
-  source = "./modules/services/tech-challenge-load-balancer"
+# module "tech_challenge_load_balancer" {
+#   source = "../../modules/services/tech-challenge-load-balancer"
 
-  vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
-  subnet_list = [
-    module.tech_challenge_public_subnet_1.subnet_id,
-    module.tech_challenge_public_subnet_2.subnet_id
-  ]
+#   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
+#   subnet_list = [
+#     module.tech_challenge_public_subnet_1.subnet_id,
+#     module.tech_challenge_public_subnet_2.subnet_id
+#   ]
 
-  security_groups = [
-    module.tech_challenge_security_group_elb.id
-  ]
+#   security_groups = [
+#     module.tech_challenge_security_group_elb.id
+#   ]
 
-  depends_on = [
-    module.tech_challenge_vpc    
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc    
+#   ]
+# }
 
 # ---------------------------------------------------- Auto Scaling Group ---------------------------------------------------------------- #
 
-module "tech_challenge_auto_scaling_group_frontend" {
-  source = "./modules/services/tech-challenge-auto-scaling-group"
+# module "tech_challenge_auto_scaling_group_frontend" {
+#   source = "../../modules/services/tech-challenge-auto-scaling-group"
 
-  load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
-  launch_configuration_name = module.tech_challenge_launch_configuration.launch_configuration_name
-  public_subnet_list = [
-    module.tech_challenge_public_subnet_1.subnet_id,
-    module.tech_challenge_public_subnet_2.subnet_id
-  ]
+#   load_balancer_id = module.tech_challenge_load_balancer.load_balancer_id
+#   launch_configuration_name = module.tech_challenge_launch_configuration.launch_configuration_name
+#   public_subnet_list = [
+#     module.tech_challenge_public_subnet_1.subnet_id,
+#     module.tech_challenge_public_subnet_2.subnet_id
+#   ]
 
-  depends_on = [
-    module.tech_challenge_vpc,
-    module.tech_challenge_db_instance,
-    module.tech_challenge_security_group_frontend
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc,
+#     module.tech_challenge_db_instance,
+#     module.tech_challenge_security_group_frontend
+#   ]
+# }
 
 # ---------------------------------------------------- Auto Scaling Policy--------------------------------------------------------------- #
 
-module "tech_challenge_auto_scaling_policy_frontend_up" {
-  source = "./modules/services/tech-challenge-auto-scaling-policy"
+# module "tech_challenge_auto_scaling_policy_frontend_up" {
+#   source = "../../modules/services/tech-challenge-auto-scaling-policy"
 
-  name                   = "tech_challenge_auto_scaling_policy_frontend_up"
-  scaling_adjustment     = 1
-  adjustment_type        = "ChangeInCapacity"
-  cooldown               = 300
-  autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
+#   name                   = "tech_challenge_auto_scaling_policy_frontend_up"
+#   scaling_adjustment     = 1
+#   adjustment_type        = "ChangeInCapacity"
+#   cooldown               = 300
+#   autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
   
-  depends_on = [
-    module.tech_challenge_vpc
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc
+#   ]
+# }
 
-module "tech_challenge_auto_scaling_policy_frontend_down" {
-  source = "./modules/services/tech-challenge-auto-scaling-policy"
+# module "tech_challenge_auto_scaling_policy_frontend_down" {
+#   source = "../../modules/services/tech-challenge-auto-scaling-policy"
 
-  name                   = "tech_challenge_auto_scaling_policy_frontend_down"
-  scaling_adjustment     = -1
-  adjustment_type        = "ChangeInCapacity"
-  cooldown               = 300
-  autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
+#   name                   = "tech_challenge_auto_scaling_policy_frontend_down"
+#   scaling_adjustment     = -1
+#   adjustment_type        = "ChangeInCapacity"
+#   cooldown               = 300
+#   autoscaling_group_name = module.tech_challenge_auto_scaling_group_frontend.name
   
-  depends_on = [
-    module.tech_challenge_vpc
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc
+#   ]
+# }
 
 # ---------------------------------------------------- Cloudwatch Metric Alarm -------------------------------------------------------- #
 
-module "tech_challenge_cloud_metric_alarm_up" {
-  source = "./modules/services/tech-challenge-cloudwatch-metric-alarm"
+# module "tech_challenge_cloud_metric_alarm_up" {
+#   source = "../../modules/services/tech-challenge-cloudwatch-metric-alarm"
 
-  alarm_name          = "tech_challenge_cpu_alarm_up"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = "120"
-  statistic           = "Average"
-  threshold           = "60"
-  dimensions          = {
-    AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
-  } 
+#   alarm_name          = "tech_challenge_cpu_alarm_up"
+#   comparison_operator = "GreaterThanOrEqualToThreshold"
+#   evaluation_periods  = "2"
+#   metric_name         = "CPUUtilization"
+#   namespace           = "AWS/EC2"
+#   period              = "120"
+#   statistic           = "Average"
+#   threshold           = "60"
+#   dimensions          = {
+#     AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
+#   } 
 
-  alarm_description   = "Tech Challenge increase alarm auto scaling group instance base on CPU"
-  alarm_actions       = [
-    module.tech_challenge_auto_scaling_policy_frontend_up.arn
-  ]
+#   alarm_description   = "Tech Challenge increase alarm auto scaling group instance base on CPU"
+#   alarm_actions       = [
+#     module.tech_challenge_auto_scaling_policy_frontend_up.arn
+#   ]
   
-  depends_on = [
-    module.tech_challenge_vpc,
-    module.tech_challenge_auto_scaling_policy_frontend_up
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc,
+#     module.tech_challenge_auto_scaling_policy_frontend_up
+#   ]
+# }
 
-module "tech_challenge_cloud_metric_alarm_down" {
-  source = "./modules/services/tech-challenge-cloudwatch-metric-alarm"
+# module "tech_challenge_cloud_metric_alarm_down" {
+#   source = "../../modules/services/tech-challenge-cloudwatch-metric-alarm"
 
-  alarm_name          = "tech_challenge_web_cpu_alarm_down"
-  comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = "120"
-  statistic           = "Average"
-  threshold           = "10"
-  dimensions          = {
-    AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
-  } 
+#   alarm_name          = "tech_challenge_web_cpu_alarm_down"
+#   comparison_operator = "LessThanOrEqualToThreshold"
+#   evaluation_periods  = "2"
+#   metric_name         = "CPUUtilization"
+#   namespace           = "AWS/EC2"
+#   period              = "120"
+#   statistic           = "Average"
+#   threshold           = "10"
+#   dimensions          = {
+#     AutoScalingGroupName = module.tech_challenge_auto_scaling_group_frontend.name
+#   } 
 
-  alarm_description   = "Tech Challenge decrease alarm auto scaling group instance base on CPU"
-  alarm_actions       = [
-    module.tech_challenge_auto_scaling_policy_frontend_down.arn
-  ]
+#   alarm_description   = "Tech Challenge decrease alarm auto scaling group instance base on CPU"
+#   alarm_actions       = [
+#     module.tech_challenge_auto_scaling_policy_frontend_down.arn
+#   ]
   
-  depends_on = [
-    module.tech_challenge_vpc,
-    module.tech_challenge_auto_scaling_policy_frontend_down
-  ]
-}
+#   depends_on = [
+#     module.tech_challenge_vpc,
+#     module.tech_challenge_auto_scaling_policy_frontend_down
+#   ]
+# }
 
 # ---------------------------------------------------- DB Instance ---------------------------------------------------------------------- #
 
 module "tech_challenge_db_instance" {
-  source = "./modules/services/tech-challenge-db-instance"
+  source = "../../modules/services/tech-challenge-db-instance"
   vpc_id = module.tech_challenge_vpc.tech_challenge_vpc_id
   challenge_postgres_db_password = var.challenge_postgres_db_password
   db_instance_sg_id = module.tech_challenge_security_group_database.id
@@ -487,9 +487,9 @@ module "tech_challenge_db_instance" {
 
 module "tech_challenge_iam_role_eks" {
 
-  source = "./modules/services/tech-challenge-iam-role"
+  source = "../../modules/services/tech-challenge-iam-role"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   name = "tech_eks_iam_role"
   assume_role_policy = jsonencode({
@@ -512,9 +512,9 @@ module "tech_challenge_iam_role_eks" {
 
 module "tech_challenge_iam_role_eks_nodes" {
 
-  source = "./modules/services/tech-challenge-iam-role"
+  source = "../../modules/services/tech-challenge-iam-role"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   name = "tech_eks_nodes_iam_role"
   assume_role_policy = jsonencode({
@@ -535,46 +535,73 @@ module "tech_challenge_iam_role_eks_nodes" {
   ]
 }
 
+resource "aws_iam_policy" "eks_node_auto_scaling_policy" {
+  name        = "eks_node_auto_scaling_policy"
+  path        = "/"
+  description = "My test policy"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "ec2:DescribeLaunchTemplateVersions"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+  })
+}
+
 # ---------------------------------------------------- IAM roles policy attachment------------------------------------------------------------------- #
 
 module "tech_challenge_eks_iam_role_policy_attachment" {
 
-  source = "./modules/services/tech-challenge-iam-role-policy-attachment"
+  source = "../../modules/services/tech-challenge-iam-role-policy-attachment"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role = module.tech_challenge_iam_role_eks[0].name
+  role = module.tech_challenge_iam_role_eks.name
 
   depends_on = [
     module.tech_challenge_vpc,
-    module.tech_challenge_iam_role_eks 
+    module.tech_challenge_iam_role_eks,  
   ]
 }
 
 module "tech_challenge_iam_role_policy_attachment_eks_worker_node" {
 
-  source = "./modules/services/tech-challenge-iam-role-policy-attachment"
+  source = "../../modules/services/tech-challenge-iam-role-policy-attachment"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role = module.tech_challenge_iam_role_eks_nodes[0].name
+  role = module.tech_challenge_iam_role_eks_nodes.name
 
   depends_on = [
     module.tech_challenge_vpc,
-    module.tech_challenge_iam_role_eks_nodes 
+    module.tech_challenge_iam_role_eks_nodes
   ]
 }
 
 module "tech_challenge_iam_role_policy_attachment_eks_cni_policy" {
 
-  source = "./modules/services/tech-challenge-iam-role-policy-attachment"
+  source = "../../modules/services/tech-challenge-iam-role-policy-attachment"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role = module.tech_challenge_iam_role_eks_nodes[0].name
+  role = module.tech_challenge_iam_role_eks_nodes.name
 
   depends_on = [
     module.tech_challenge_vpc,
@@ -584,12 +611,12 @@ module "tech_challenge_iam_role_policy_attachment_eks_cni_policy" {
 
 module "tech_challenge_iam_role_policy_attachment_eks_container_registry" {
 
-  source = "./modules/services/tech-challenge-iam-role-policy-attachment"
+  source = "../../modules/services/tech-challenge-iam-role-policy-attachment"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role = module.tech_challenge_iam_role_eks_nodes[0].name
+  role = module.tech_challenge_iam_role_eks_nodes.name
 
   depends_on = [
     module.tech_challenge_vpc,
@@ -597,19 +624,35 @@ module "tech_challenge_iam_role_policy_attachment_eks_container_registry" {
   ]
 }
 
+module "tech_challenge_eks_iam_role_policy_auto_scaling_attachment" {
+
+  source = "../../modules/services/tech-challenge-iam-role-policy-attachment"
+
+  # count = var.eks_solution ? 1 : 0
+
+  policy_arn = aws_iam_policy.eks_node_auto_scaling_policy.arn
+  role = module.tech_challenge_iam_role_eks_nodes.name
+
+  depends_on = [
+    module.tech_challenge_vpc,
+    module.tech_challenge_iam_role_eks,  
+  ]
+}
+
+
 # ---------------------------------------------------- EKS Cluster ------------------------------------------------------------------- #
 
 module "tech_challenge_eks_cluster" {
 
-  source = "./modules/services/tech-challenge-eks-cluster"
+  source = "../../modules/services/tech-challenge-eks-cluster"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
   name            = "tech_challenge_eks_cluster"
-  role_arn        = module.tech_challenge_iam_role_eks[0].arn
+  role_arn        = module.tech_challenge_iam_role_eks.arn
   cluster_version = "1.19"
   security_group_ids = [
-    module.tech_challenge_security_group_eks_cluster[0].id
+    module.tech_challenge_security_group_eks_cluster.id
   ]
 
   subnet_ids       = [
@@ -619,37 +662,77 @@ module "tech_challenge_eks_cluster" {
 
   depends_on = [
     module.tech_challenge_vpc,
-    module.tech_challenge_iam_role_eks 
+    module.tech_challenge_iam_role_eks,
+    module.tech_challenge_db_instance
   ]
 }
 
-# ---------------------------------------------------- EKS Cluster Nodes --------------------------------------------------------- #
+# ---------------------------------------------------- EKS Cluster Node Group -------------------------------------------------------- #
 
 module "tech_challenge_eks_cluster_nodes" {
 
-  source = "./modules/services/tech-challenge-eks-node-group"
+  source = "../../modules/services/tech-challenge-eks-node-group"
 
-  count = var.eks_solution ? 1 : 0
+  # count = var.eks_solution ? 1 : 0
 
-  cluster_name    = module.tech_challenge_eks_cluster[0].name
-  node_group_name = "node_group_1"
-  node_role_arn   = module.tech_challenge_iam_role_eks_nodes[0].arn
+  cluster_name    = module.tech_challenge_eks_cluster.name
+  node_group_name = "node_group1"
+  node_role_arn   = module.tech_challenge_iam_role_eks_nodes.arn
   subnet_ids      = [
     module.tech_challenge_public_subnet_1.subnet_id,
     module.tech_challenge_public_subnet_2.subnet_id
   ]
 
-  desired_size = 1
-  max_size     = 1
-  min_size     = 1
+  instance_types = [ 
+    "t2.micro" 
+  ]
 
-  # tags = {
-  #   "k8s.io/cluster-autoscaler/module.tech_challenge_eks_cluster[0].name" = "owned",
-  #   "k8s.io/cluster-autoscaler/enabled" = true
-  # }
+  desired_size = 2
+  max_size     = 10
+  min_size     = 2
+
+  tags = {
+    # "k8s.io/cluster-autoscaler/module.tech_challenge_eks_cluster[0].name" = "owned",
+    "k8s.io/cluster-autoscaler/enabled" = true
+    Name = "Cool"
+  }
 
   depends_on = [
     module.tech_challenge_vpc,
-    module.tech_challenge_iam_role_eks 
+    module.tech_challenge_iam_role_eks ,
+    module.tech_challenge_iam_role_policy_attachment_eks_worker_node,
+    module.tech_challenge_iam_role_policy_attachment_eks_cni_policy,
+    module.tech_challenge_iam_role_policy_attachment_eks_container_registry,
   ]
 }
+
+# resource "aws_eks_node_group" "node" {
+#   cluster_name    = module.tech_challenge_eks_cluster.name
+#   node_group_name = "node_group1"
+#   node_role_arn   = module.tech_challenge_iam_role_eks_nodes.arn
+#   subnet_ids      = [
+#     module.tech_challenge_public_subnet_1.subnet_id,
+#     module.tech_challenge_public_subnet_2.subnet_id
+#   ]
+
+#   scaling_config {
+#     desired_size = 1
+#     max_size     = 1
+#     min_size     = 1
+#   }
+
+#   # desired_size = 1
+#   # max_size     = 1
+#   # min_size     = 1
+
+#   tags = {
+#     "k8s.io/cluster-autoscaler/module.tech_challenge_eks_cluster[0].name" = "owned",
+#     "k8s.io/cluster-autoscaler/enabled" = true
+#   }
+  
+#   depends_on = [
+#     module.tech_challenge_iam_role_policy_attachment_eks_worker_node,
+#     module.tech_challenge_iam_role_policy_attachment_eks_cni_policy,
+#     module.tech_challenge_iam_role_policy_attachment_eks_container_registry,
+#   ]
+# }

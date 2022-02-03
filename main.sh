@@ -6,15 +6,43 @@ declare_variable(){
 
     export TF_VAR_challenge_terraform_state_s3_bucket_name=tech-challenge-terraform-state-s3-bucket
     export TF_VAR_challenge_terraform_state_s3_bucket_region=ap-southeast-1
+    export TF_VAR_challenge_terraform_solution_region=ap-southeast-1
     export TF_VAR_challenge_terraform_state_dynamo_db_table_name=tech-challenge-terraform-state-dynamodb
     export TF_VAR_challenge_terraform_state_dynamo_db_table_billing_mode=PAY_PER_REQUEST
-    # export TF_VAR_challenge_postgres_db_password=""    
+    export TF_VAR_challenge_postgres_db_password="changeme"
+    export TF_VAR_eks_solution=""
+    export TF_VAR_eks_solution_region="ap-southeast-1"
+    # export TF_VAR_auto_scaling_group_solution="false"
     export INSTANCE_IP_ADDRESS=""
     export INSTANCE_USER=""
 }
 
 declare_variables_for_destroy(){
     export TF_VAR_challenge_postgres_db_password=""
+}
+
+
+install_helm_cli (){
+    # Check if Helm Cli is installed, if yes then move forward, ignore this
+
+    if [ ! $(which helm) ]; then
+
+        echo "Installing helm..."
+
+        HELM_PACKAGE="helm-v3.8.0-linux-amd64.tar.gz"
+
+        curl "https://get.helm.sh/${HELM_PACKAGE}" -o "${HELM_PACKAGE}" 
+        tar -zxvf ${HELM_PACKAGE}
+        sudo mv linux-amd64/helm /usr/local/bin/helm
+        helm version
+
+        # clean up
+        rm -rf ${HELM_PACKAGE}
+        rm -rf ./linux-amd64
+    else
+        echo "helm cli is already installed"
+    fi
+    
 }
 
 install_aws_cli(){
@@ -92,6 +120,27 @@ create_stack_by_terraform(){
     cd ..
 }
 
+create_stack_by_terraform_eks_solution(){
+
+    # automatically provision the server by Terraform
+
+    cd ./terraform/eks_solution/terraform
+    terraform init
+    terraform apply -auto-approve
+    cd ../../..
+}
+
+get_k8s_context() {
+    cd ./terraform/eks_solution/terraform
+    EKS_REGION=$(terraform output eks_solution_region | sed 's/"//g')
+    EKS_CLUSTER_NAME=$(terraform output eks_cluster_name | sed 's/"//g')
+    aws eks \
+        --region ${EKS_REGION} \
+        update-kubeconfig \
+        --name ${EKS_CLUSTER_NAME}
+    cd ../../..
+}
+
 remove_terraform_ec2_server(){
 
     # automatically removes the server by Terraform
@@ -103,6 +152,24 @@ remove_terraform_ec2_server(){
 }
 
 
+remove_terraform_eks_solution(){
+
+    # automatically removes the server by Terraform
+
+    cd ./terraform/eks_solution/terraform
+    terraform init
+    terraform destroy -auto-approve
+    cd ../../..
+}
+
+install_helm_chart(){
+    cd ./terraform/eks_solution/helm/
+    helm upgrade --install techchallenge ./techchallenge
+    cd ../../..
+}
+
+
+
 
 get_ec2_instance_ip_address (){
 
@@ -111,6 +178,15 @@ get_ec2_instance_ip_address (){
     cd ./terraform
     INSTANCE_IP_ADDRESS=$(terraform output challenge_web_server_instance_ip_addr | sed 's/"//g' )
     USER=ubuntu
+    cd ..
+}
+
+get_eks_config () {
+    cd ./terraform
+    aws eks \
+        --region ${TF_VAR_challenge_terraform_solution_region} \
+        update-kubeconfig \
+        --name $(terraform output eks_solution_cluster_name | sed 's/"//g')
     cd ..
 }
 
@@ -125,7 +201,20 @@ create_stack(){
 
     create_dynamo_db_for_terraform_state_lock
 
-    create_stack_by_terraform
+    if [ ${TF_VAR_eks_solution} = "true" ]; then
+        echo "Creating EKS solution"
+        create_stack_by_terraform_eks_solution
+
+        get_k8s_context
+
+        install_helm_cli
+
+        install_helm_chart
+
+    else 
+        echo 'Creating Auto Scaling solution...'
+        create_stack_by_terraform
+    fi
 
 }
 
@@ -134,7 +223,13 @@ destroy_stack(){
 
     declare_variables_for_destroy
 
-    remove_terraform_ec2_server
+    if [ ${TF_VAR_eks_solution} = "true" ]; then
+        echo "Destroying EKS solution"
+        remove_terraform_eks_solution
+    else 
+        echo 'Destroying Auto Scaling solution...'
+        remove_terraform_ec2_server
+    fi
 
 }
 
