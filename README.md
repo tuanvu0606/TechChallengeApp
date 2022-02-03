@@ -1,6 +1,7 @@
 # TechChallengeApp
 Repo built for TechChallengeApp
 
+
 ## Topology
 
 [<img src="https://i.ibb.co/N9q33Q5/image.png">](https://github.com/tuanvu0606/TechChallengeApp)
@@ -45,6 +46,11 @@ Please clone repo by this command:
 
 ```
 git clone https://github.com/tuanvu0606/TechChallengeApp.git
+```
+
+## EKS solution
+```
+export TF_VAR_eks_solution="true"
 ```
 
 ## Set up Database Credentials
